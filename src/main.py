@@ -1,5 +1,5 @@
 import json
-from mvp_gdpr_obfuscator import process_gdpr_obfuscation
+from utils import process_gdpr_obfuscation
 
 def main():
     """ Main function to execute GDPR obfuscation process. """

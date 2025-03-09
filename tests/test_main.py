@@ -1,28 +1,23 @@
+import json
 import pytest
-import boto3
-import pandas as pd
-import io
-from moto import mock_s3
-
+from src.utils import process_gdpr_obfuscation
 
 @pytest.fixture
-def mock_s3_bucket():
-    with mock_s3():
-        s3_client = boto3.client("s3", region_name="us-east-1")
-        bucket_name = "test-bucket"
-        s3_client.create_bucket(Bucket=bucket_name)
-        yield s3_client, bucket_name
+def mock_event():
+    return {
+        "file_to_obfuscate": "s3://test-bucket/test.csv",
+        "pii_fields": ["name", "email_address"]
+    }
 
-@pytest.fixture
-def sample_dataframe():
-    return pd.DataFrame({
-        "student_id": [1234, 5678],
-        "name": ["John Smith", "Jane Doe"],
-        "email_address": ["john.smith@email.com", "jane.doe@email.com"]
-    })
+def test_process_gdpr_obfuscation(mock_event):
+    result = process_gdpr_obfuscation(mock_event)
+    assert result["status"] == "Success"
+    assert "obfuscated" in result["obfuscated_file"]
 
-@pytest.fixture
-def sample_csv():
-    return "student_id,name,email_address\n1234,John Smith,john.smith@email.com\n5678,Jane Doe,jane.doe@email.com"
-
-
+def test_main_execution(capsys, mock_event):
+    """ Test main function execution and output correctness. """
+    process_gdpr_obfuscation(mock_event)  # Run the function
+    captured = capsys.readouterr()
+    output = json.loads(captured.out.strip())
+    assert output["status"] == "Success"
+    assert "obfuscated" in output["obfuscated_file"]
