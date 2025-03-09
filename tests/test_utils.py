@@ -2,7 +2,7 @@ import pytest
 import boto3
 import pandas as pd
 import io
-from moto import mock_s3
+from moto.s3 import mock_s3
 from src.utils import extract_from_s3, obfuscate_pii, load_to_s3, process_gdpr_obfuscation
 
 @pytest.fixture
