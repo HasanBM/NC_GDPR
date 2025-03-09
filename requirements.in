@@ -1,0 +1,11 @@
+boto3
+pandas
+pytest
+moto
+black
+flake8
+bandit
+safety
+pdoc
+pytest-testdox
+pytest-cov
